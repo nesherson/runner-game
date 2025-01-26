@@ -3,10 +3,14 @@ import { useTick, TilingSprite } from "@pixi/react";
 
 import groundImg from "../../assets/ground/ground.png";
 
-function Ground({ appWidth, appHeight }: { appWidth: number, appHeight: number }) {
-    const yScale = 1.5;
-    const groundHeight = 18 * yScale;
+interface Props {
+    appWidth: number,
+    appHeight: number,
+    groundHeight: number,
+    groundYSale: number
+}
 
+function Ground({ appWidth, appHeight, groundHeight, groundYSale }: Props) {
     const [xPos, setXPos] = useState(0);
 
     useTick(d => {
@@ -21,7 +25,7 @@ function Ground({ appWidth, appHeight }: { appWidth: number, appHeight: number }
             x={0}
             y={appHeight - groundHeight}
             tilePosition={{ x: xPos, y: 0 }}
-            tileScale={{ x: 1, y: yScale }}
+            tileScale={{ x: 1, y: groundYSale }}
         />
     );
 }

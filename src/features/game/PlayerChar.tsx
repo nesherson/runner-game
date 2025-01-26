@@ -5,15 +5,17 @@ import { Texture, Resource } from "pixi.js";
 import playerCharStart from "../../assets/characters/player-start.png";
 import playerCharEnd from "../../assets/characters/player-end.png";
 
-function PlayerChar({ appHeight }: { appHeight: number }) {
-  const groundYScale = 1.5;
-  const groundHeight = 18 * groundYScale;
+interface Props {
+  appHeight: number,
+  groundHeight: number
+}
+
+function PlayerChar({ appHeight, groundHeight }: Props) {
   const charHeight = 36;
   const charWidth = 36;
   const jumpHeight = 60;
   const originalYPos = appHeight - groundHeight - charHeight;
   const xPos = 30;
-
 
   const [yPos, setYPos] = useState(originalYPos);
   const [isJumping, setIsJumping] = useState(false);

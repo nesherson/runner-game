@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { TilingSprite, useTick } from "@pixi/react";
 
-import backgroundImg from "../../assets/background/background.png"
+import backgroundImg from "../../assets/background/background.png";
 
-function Background({ appWidth, appHeight }: { appWidth: number, appHeight: number }) {
+interface Props {
+    appWidth: number,
+    appHeight: number
+}
+
+function Background({ appWidth, appHeight }: Props) {
     const [xPos, setXPos] = useState(0);
-    
+
     useTick(d => {
         setXPos(prev => prev - 0.5 * d);
     });
