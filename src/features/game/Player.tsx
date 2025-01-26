@@ -2,15 +2,16 @@ import { useState, useEffect } from "react";
 import { useTick, AnimatedSprite } from "@pixi/react";
 import { Texture, Resource } from "pixi.js";
 
-import playerCharStart from "../../assets/characters/player-start.png";
-import playerCharEnd from "../../assets/characters/player-end.png";
+import playerCharStart from "../../assets/characters/player/player-start.png";
+import playerCharEnd from "../../assets/characters/player/player-end.png";
 
 interface Props {
   appHeight: number,
-  groundHeight: number
+  groundHeight: number,
+  animationSpeed: number
 }
 
-function PlayerChar({ appHeight, groundHeight }: Props) {
+function Player({ appHeight, groundHeight, animationSpeed }: Props) {
   const charHeight = 36;
   const charWidth = 36;
   const jumpHeight = 60;
@@ -64,9 +65,9 @@ function PlayerChar({ appHeight, groundHeight }: Props) {
       width={charWidth}
       x={xPos}
       y={yPos}
-      animationSpeed={0.15}
+      animationSpeed={animationSpeed}
       isPlaying={true}
     />
 }
 
-export default PlayerChar;
+export default Player;

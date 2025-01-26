@@ -1,7 +1,7 @@
 import { Stage } from "@pixi/react";
 
 import Ground from "./Ground";
-import PlayerChar from "./PlayerChar";
+import Player from "./Player";
 import Background from "./Background";
 
 function Game() {
@@ -9,6 +9,7 @@ function Game() {
     const appHeight = 480;
     const groundYScale = 1.5;
     const groundHeight = 18 * groundYScale;
+    const animationSpeed = 0.1;
 
     return (
         <Stage width={appWidth} height={appHeight} options={{ background: 0x1099bb }}>
@@ -20,9 +21,10 @@ function Game() {
                 appWidth={appWidth}
                 groundHeight={groundHeight}
                 groundYSale={groundYScale} />
-            <PlayerChar
+            <Player
                 appHeight={appHeight}
-                groundHeight={groundHeight} />
+                groundHeight={groundHeight}
+                animationSpeed={animationSpeed} />
         </Stage>
     );
 }
