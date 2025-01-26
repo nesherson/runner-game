@@ -3,6 +3,7 @@ import { Stage } from "@pixi/react";
 import Ground from "./Ground";
 import Player from "./Player";
 import Background from "./Background";
+import Enemy from "./Enemy";
 
 function Game() {
     const appWidth = 640;
@@ -23,6 +24,11 @@ function Game() {
                 groundYSale={groundYScale} />
             <Player
                 appHeight={appHeight}
+                groundHeight={groundHeight}
+                animationSpeed={animationSpeed} />
+            <Enemy
+                appHeight={appHeight}
+                appWidth={appWidth}
                 groundHeight={groundHeight}
                 animationSpeed={animationSpeed} />
         </Stage>
