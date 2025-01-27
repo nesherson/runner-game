@@ -1,72 +1,35 @@
 import { useState, useEffect } from "react";
-import { useTick, AnimatedSprite } from "@pixi/react";
+import { AnimatedSprite } from "@pixi/react";
 import { Texture, Resource } from "pixi.js";
 
 import playerCharStart from "../../assets/characters/player/player-start.png";
 import playerCharEnd from "../../assets/characters/player/player-end.png";
+import { ANIMATION_SPEED, PLAYER_HEIGHT, PLAYER_WIDTH } from "./constants";
 
 interface Props {
-  appHeight: number,
-  groundHeight: number,
-  animationSpeed: number
+  xPos: number,
+  yPos: number,
+  isGamePlaying: boolean
 }
 
-function Player({ appHeight, groundHeight, animationSpeed }: Props) {
-  const charHeight = 36;
-  const charWidth = 36;
-  const jumpHeight = 60;
-  const originalYPos = appHeight - groundHeight - charHeight;
-  const xPos = 30;
-
-  const [yPos, setYPos] = useState(originalYPos);
-  const [isJumping, setIsJumping] = useState(false);
-  const [isFalling, setIsFalling] = useState(false);
+function Player({ xPos, yPos, isGamePlaying }: Props) {
   const [frames, setFrames] = useState<Texture<Resource>[]>([]);
 
   useEffect(() => {
     const images = [playerCharStart, playerCharEnd];
 
-    window.addEventListener("keydown", handleKeyDown);
-
     setFrames(images.map(x => Texture.from(x)));
   }, []);
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === " ") {
-      setIsJumping(true)
-    }
-  }
-
-  useTick(d => {
-    if (isJumping) {
-      if (yPos > originalYPos - jumpHeight) {
-        setYPos(prev => prev - 1.9 * d);
-      }
-      else {
-        setIsJumping(false);
-        setIsFalling(true);
-      }
-    }
-
-    if (isFalling) {
-      if (yPos < originalYPos) {
-        setYPos(prev => prev + 2.2 * d);
-      }
-      else {
-        setIsFalling(false);
-      }
-    }
-  });
 
   return frames.length > 0 &&
     <AnimatedSprite
       textures={frames}
-      height={charHeight}
-      width={charWidth}
+      height={PLAYER_HEIGHT}
+      width={PLAYER_WIDTH}
       x={xPos}
       y={yPos}
-      animationSpeed={animationSpeed}
-      isPlaying={true}
+      animationSpeed={ANIMATION_SPEED}
+      isPlaying={isGamePlaying}
     />
 }
 
