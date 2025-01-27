@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { TilingSprite, useTick } from "@pixi/react";
 
-import backgroundImg from "../../assets/background/background.png";
-import { APP_HEIGHT, APP_WIDTH, BACKGROUND_SPEED_MULTIPLIER } from "./constants";
+import backgroundImg from "../../../assets/background/background.png";
+import { APP_HEIGHT, APP_WIDTH, BACKGROUND_SPEED_MULTIPLIER } from "../constants";
 
 interface Props {
     isGamePlaying: boolean

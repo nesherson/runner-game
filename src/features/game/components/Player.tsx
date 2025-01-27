@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { AnimatedSprite } from "@pixi/react";
 import { Texture, Resource } from "pixi.js";
 
-import playerCharStart from "../../assets/characters/player/player-start.png";
-import playerCharEnd from "../../assets/characters/player/player-end.png";
-import { ANIMATION_SPEED, PLAYER_HEIGHT, PLAYER_WIDTH } from "./constants";
+import playerCharStart from "../../../assets/characters/player/player-start.png";
+import playerCharEnd from "../../../assets/characters/player/player-end.png";
+import { ANIMATION_SPEED, PLAYER_HEIGHT, PLAYER_WIDTH } from "../constants";
 
 interface Props {
   xPos: number,

@@ -1,7 +1,8 @@
 export type GameState = {
     status: GameStatus,
     player: Player,
-    score: number
+    score: number,
+    obstacles: Obstacle[]
 }
 
 export type Player = {
@@ -15,6 +16,11 @@ export type GameAction = {
     status?: GameStatus,
     deltaTime?: number,
     jumpValue?: boolean
+}
+
+export type Obstacle = {
+    x: number,
+    y: number
 }
 
 export enum GameStatus {

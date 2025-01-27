@@ -1,7 +1,7 @@
 import { Text } from "@pixi/react";
 import { TextStyle } from "pixi.js";
 
-import { APP_WIDTH, APP_HEIGHT } from "./constants";
+import { APP_WIDTH, APP_HEIGHT } from "../constants";
 
 interface Props {
     score: number
