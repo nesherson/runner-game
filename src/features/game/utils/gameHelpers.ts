@@ -24,7 +24,6 @@ export function createObstacles() {
     obstacle.y = APP_HEIGHT - GROUND_HEIGHT - OBSTACLE_HEIGHT;
     obstacle.x = prevPosX + (Math.random() * (max - min) + min);
     prevPosX = obstacle.x;
-    console.log(obstacle.x);
 
     obstacles.push(obstacle);
   }
@@ -40,4 +39,11 @@ export function hasPlayerCollided(player: Player, obstacles: Obstacle[]) {
       o.y < player.y + PLAYER_HEIGHT &&
       o.y + OBSTACLE_HEIGHT > player.y
   );
+}
+
+export function isScoreMilestone(score: number) {
+  if (score === 0)
+    return false;
+  
+  return score % 100 === 0;
 }

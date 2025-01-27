@@ -6,7 +6,7 @@ import { APP_HEIGHT, APP_WIDTH, PLAYER_ORIGINAL_Y_POS } from './features/game/co
 import Game from './features/game/components/Game';
 import { GameState, GameStatus } from './features/game/types/types';
 import { reducer } from './features/game/stores/reducers';
-import { createObstacles } from './features/game/utils/obstacleHelpers';
+import { createObstacles } from './features/game/utils/gameHelpers';
 
 const initialGameState: GameState = {
   status: GameStatus.Initial,

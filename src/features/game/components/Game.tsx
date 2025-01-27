@@ -15,7 +15,8 @@ import {
     PLAYER_ORIGINAL_Y_POS
 } from "../constants";
 import { GameAction, GameState, GameStatus } from "../types/types";
-import { hasPlayerCollided } from "../utils/obstacleHelpers";
+import { hasPlayerCollided, isScoreMilestone } from "../utils/gameHelpers";
+import { playCollisionSound, playJumpSound, playScoreMilestone } from "../utils/soundHelpers";
 
 interface Props {
     gameState: GameState,
@@ -30,7 +31,12 @@ function Game({ gameState, dispatch }: Props) {
         dispatch({ type: "increase_score" });
         dispatch({ type: "move_obstacles", deltaTime: deltaTime });
 
+        if (isScoreMilestone(gameState.score)) {
+            playScoreMilestone();
+        }
+
         if (hasPlayerCollided(gameState.player, gameState.obstacles)) {
+            playCollisionSound();
             dispatch({ type: "end_game" });
             return;
         }
@@ -64,8 +70,10 @@ function Game({ gameState, dispatch }: Props) {
                 return;
             }
 
-            if (!gameState.player.isJumping)
+            if (!gameState.player.isJumping) {
+                playJumpSound();
                 dispatch({ type: "player_jump", jumpValue: true });
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 import { APP_WIDTH, OBSTACLE_WIDTH, PLAYER_FALL_STRENGTH, PLAYER_JUMP_STRENGTH, PLAYER_ORIGINAL_Y_POS, SCORE_INCREASE_MULTIPLIER } from "../constants";
 import { GameState, GameAction, GameStatus } from "../types/types";
-import { createObstacles } from "../utils/obstacleHelpers";
+import { createObstacles } from "../utils/gameHelpers";
 
 export function reducer(state: GameState, action: GameAction): GameState {
     switch (action.type) {
