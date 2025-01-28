@@ -11,6 +11,8 @@ export const GROUND_SPEED_MULTIPLIER = 2.7;
 
 export const OBSTACLE_HEIGHT = 36;
 export const OBSTACLE_WIDTH = 36;
+export const OBSTACLE_MIN_SPACING = 200;
+export const OBSTACLE_MAX_SPACING = 450;
 
 export const PLAYER_HEIGHT = 36;
 export const PLAYER_WIDTH = 36;

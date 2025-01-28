@@ -8,14 +8,16 @@ export type GameState = {
 export type Player = {
     x: number,
     y: number,
-    isJumping: boolean
+    isJumping: boolean,
+    isFalling: boolean
 }
 
 export type GameAction = {
     type: string,
     status?: GameStatus,
     deltaTime?: number,
-    jumpValue?: boolean
+    isJumping?: boolean,
+    isFalling?: boolean
 }
 
 export type Obstacle = {

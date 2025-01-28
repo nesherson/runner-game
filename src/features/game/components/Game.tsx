@@ -46,16 +46,21 @@ function Game({ gameState, dispatch }: Props) {
             dispatch({ type: "decrease_player_y_pos", deltaTime: deltaTime });
         }
 
-        if (gameState.player.y <= PLAYER_ORIGINAL_Y_POS - PLAYER_JUMP_HEIGHT) {
-            if (gameState.player.isJumping) {
-                dispatch({ type: "player_jump", jumpValue: false });
-            }
-        }
-
-        if (!gameState.player.isJumping &&
+        if (gameState.player.isFalling &&
             gameState.player.y < PLAYER_ORIGINAL_Y_POS) {
             dispatch({ type: "increase_player_y_pos", deltaTime: deltaTime });
         }
+
+        if (gameState.player.y <= PLAYER_ORIGINAL_Y_POS - PLAYER_JUMP_HEIGHT &&
+            !gameState.player.isFalling) {
+            dispatch({ type: "player_fall" });
+        }
+
+        if (gameState.player.isFalling &&
+            gameState.player.y > PLAYER_ORIGINAL_Y_POS - 10) {
+            dispatch({ type: "player_reset_fall" });
+        }
+
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,9 +75,11 @@ function Game({ gameState, dispatch }: Props) {
                 return;
             }
 
-            if (!gameState.player.isJumping) {
+            if (!gameState.player.isJumping &&
+                !gameState.player.isFalling
+            ) {
                 playJumpSound();
-                dispatch({ type: "player_jump", jumpValue: true });
+                dispatch({ type: "player_jump", isJumping: true });
             }
         }
     }

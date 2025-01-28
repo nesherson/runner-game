@@ -3,6 +3,8 @@ import {
   APP_WIDTH,
   GROUND_HEIGHT,
   OBSTACLE_HEIGHT,
+  OBSTACLE_MAX_SPACING,
+  OBSTACLE_MIN_SPACING,
   OBSTACLE_WIDTH,
   PLAYER_HEIGHT,
   PLAYER_WIDTH,
@@ -11,8 +13,6 @@ import { Obstacle, Player } from "../types/types";
 
 export function createObstacles() {
   const obstacles: Obstacle[] = [];
-  const min = 150;
-  const max = 350;
   let prevPosX = APP_WIDTH;
 
   for (let i = 0; i < 3; i++) {
@@ -22,7 +22,7 @@ export function createObstacles() {
     };
 
     obstacle.y = APP_HEIGHT - GROUND_HEIGHT - OBSTACLE_HEIGHT;
-    obstacle.x = prevPosX + (Math.random() * (max - min) + min);
+    obstacle.x = prevPosX + (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) + OBSTACLE_MIN_SPACING);
     prevPosX = obstacle.x;
 
     obstacles.push(obstacle);
@@ -44,6 +44,6 @@ export function hasPlayerCollided(player: Player, obstacles: Obstacle[]) {
 export function isScoreMilestone(score: number) {
   if (score === 0)
     return false;
-  
+
   return score % 100 === 0;
 }
