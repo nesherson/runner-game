@@ -1,15 +1,15 @@
 import {
-  APP_WIDTH,
+  ANIMATION_SPEED,
   OBSTACLE_MAX_SPACING,
   OBSTACLE_MIN_SPACING,
+  OBSTACLE_SPEED_MULTIPLIER,
   OBSTACLE_WIDTH,
   PLAYER_FALL_STRENGTH,
   PLAYER_JUMP_STRENGTH,
-  PLAYER_ORIGINAL_Y_POS,
   SCORE_INCREASE_MULTIPLIER,
 } from "../constants";
-import { GameState, GameAction, GameStatus } from "../types/types";
-import { createObstacles } from "../utils/gameHelpers";
+import { GameAction, GameState, GameStatus } from "../types/types";
+import { createInitialState } from "../utils/gameHelpers";
 
 export function reducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -24,16 +24,7 @@ export function reducer(state: GameState, action: GameAction): GameState {
         status: GameStatus.GameOver,
       };
     case "restart_game":
-      return {
-        status: GameStatus.Playing,
-        score: 0,
-        player: {
-          x: 30,
-          y: PLAYER_ORIGINAL_Y_POS,
-          isJumping: false
-        },
-        obstacles: createObstacles(),
-      };
+      return createInitialState();
     case "decrease_player_y_pos":
       return {
         ...state,
@@ -51,11 +42,14 @@ export function reducer(state: GameState, action: GameAction): GameState {
         },
       };
     case "player_jump":
+      const isJumping = !state.player.isJumping;
+
       return {
         ...state,
         player: {
           ...state.player,
-          isJumping: !state.player.isJumping
+          isJumping: isJumping,
+          animationSpeed: isJumping ? 0 : ANIMATION_SPEED,
         },
       };
     case "increase_score":
@@ -64,16 +58,20 @@ export function reducer(state: GameState, action: GameAction): GameState {
         score: state.score + 1 * SCORE_INCREASE_MULTIPLIER,
       };
     case "move_obstacles": {
+      const lastPositionedObstacle = state.obstacles.reduce((a, b) =>
+        a.x > b.x ? a : b
+      );
+
       return {
         ...state,
         obstacles: state.obstacles.map((o) => {
-          let prevPosX = APP_WIDTH;
-
           if (o.x < -OBSTACLE_WIDTH) {
-            o.x = prevPosX + (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) + OBSTACLE_MIN_SPACING);
-            prevPosX = o.x;
+            o.x =
+              lastPositionedObstacle.x +
+              (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) +
+                OBSTACLE_MIN_SPACING);
           } else {
-            o.x -= 2.3 * action.deltaTime!;
+            o.x -= OBSTACLE_SPEED_MULTIPLIER * action.deltaTime!;
           }
 
           return o;

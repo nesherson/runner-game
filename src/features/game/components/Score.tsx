@@ -12,10 +12,10 @@ function Score({ score }: Props) {
         <Text
             text={Math.floor(score).toString()}
             anchor={0.5}
-            x={APP_WIDTH * 0.85}
-            y={APP_HEIGHT * 0.1}
+            x={APP_WIDTH * 0.9}
+            y={APP_HEIGHT * 0.05}
             style={new TextStyle({
-                fontSize: 25
+                fontSize: 20
             })}
         />
     );

@@ -1,8 +1,10 @@
+import { TilingSprite, useTick } from "@pixi/react";
 import { useState } from "react";
-import { useTick, TilingSprite } from "@pixi/react";
 
-import groundImg from "../../../assets/ground/ground.png";
-import { APP_HEIGHT, APP_WIDTH, GROUND_HEIGHT, GROUND_Y_SCALE, GROUND_SPEED_MULTIPLIER } from "../constants";
+import { Texture } from "pixi.js";
+import { APP_HEIGHT, APP_WIDTH, GROUND_HEIGHT, GROUND_SPEED_MULTIPLIER, GROUND_Y_SCALE } from "../constants";
+
+const groundTexture = Texture.from("/assets/ground/ground.png");
 
 interface Props {
     isGamePlaying: boolean
@@ -20,7 +22,7 @@ function Ground({ isGamePlaying }: Props) {
 
     return (
         <TilingSprite
-            image={groundImg}
+            texture={groundTexture}
             width={APP_WIDTH}
             height={GROUND_HEIGHT}
             x={0}

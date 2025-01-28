@@ -1,6 +1,5 @@
-import { Container, Text, useTick } from "@pixi/react";
+import { Container, useApp, useTick, Text } from "@pixi/react";
 import { useEventListener } from "@react-hookz/web";
-import { TextStyle } from "pixi.js";
 import { useReducer } from "react";
 
 import Background from "./Background";
@@ -10,8 +9,6 @@ import Player from "./Player";
 import Score from "./Score";
 
 import {
-    APP_HEIGHT,
-    APP_WIDTH,
     PLAYER_JUMP_HEIGHT,
     PLAYER_ORIGINAL_Y_POS
 } from "../constants";
@@ -19,10 +16,13 @@ import { reducer } from "../stores/reducers";
 import { GameStatus } from "../types/types";
 import { createInitialState, hasPlayerCollided, isScoreMilestone } from "../utils/gameHelpers";
 import { playCollisionSound, playJumpSound, playScoreMilestone } from "../utils/soundHelpers";
+import GameOverText from "./GameOverText";
 import StartGameText from "./StartGameText";
+import { TextStyle } from "pixi.js";
 
 function Game() {
     const [gameState, dispatch] = useReducer(reducer, {}, createInitialState);
+    const app = useApp();
 
     useTick(deltaTime => {
         if (gameState.status !== GameStatus.Playing)
@@ -87,6 +87,17 @@ function Game() {
         <Container>
             <Background
                 isGamePlaying={gameState.status === GameStatus.Playing} />
+            {process.env.NODE_ENV === "development" &&
+                <Text
+                    text={Math.trunc(app.ticker.FPS).toString()}
+                    anchor={0.5}
+                    x={15}
+                    y={15}
+                    style={new TextStyle({
+                        fontSize: 10
+                    })}
+                />
+            }
             {gameState.status !== GameStatus.Initial &&
                 <Score score={gameState.score} />
             }
@@ -94,30 +105,10 @@ function Game() {
                 <StartGameText />
             }
             {gameState.status === GameStatus.GameOver &&
-                <>
-                    <Text
-                        text="Game over"
-                        anchor={0.5}
-                        x={APP_WIDTH / 2}
-                        y={APP_HEIGHT / 2}
-                        style={new TextStyle({
-                            fontSize: 50
-                        })}
-                    />
-                    <Text
-                        text="Press spacebar to restart"
-                        anchor={0.5}
-                        x={APP_WIDTH / 2}
-                        y={APP_HEIGHT / 2 + 40}
-                        style={new TextStyle({
-                            fontSize: 15
-                        })}
-                    />
-                </>
+                <GameOverText />
             }
             <Player
-                xPos={gameState.player.x}
-                yPos={gameState.player.y}
+                player={gameState.player}
                 isGamePlaying={gameState.status === GameStatus.Playing} />
             <Obstacles
                 obstacles={gameState.obstacles}
