@@ -1,29 +1,29 @@
-import { TextStyle } from "pixi.js";
 import { Container, Text, useTick } from "@pixi/react";
 import { useEventListener } from "@react-hookz/web";
+import { TextStyle } from "pixi.js";
+import { useReducer } from "react";
 
-import Ground from "./Ground";
-import Player from "./Player";
 import Background from "./Background";
+import Ground from "./Ground";
 import Obstacles from "./Obstacles";
+import Player from "./Player";
 import Score from "./Score";
 
 import {
-    APP_WIDTH,
     APP_HEIGHT,
+    APP_WIDTH,
     PLAYER_JUMP_HEIGHT,
     PLAYER_ORIGINAL_Y_POS
 } from "../constants";
-import { GameAction, GameState, GameStatus } from "../types/types";
-import { hasPlayerCollided, isScoreMilestone } from "../utils/gameHelpers";
+import { reducer } from "../stores/reducers";
+import { GameStatus } from "../types/types";
+import { createInitialState, hasPlayerCollided, isScoreMilestone } from "../utils/gameHelpers";
 import { playCollisionSound, playJumpSound, playScoreMilestone } from "../utils/soundHelpers";
+import StartGameText from "./StartGameText";
 
-interface Props {
-    gameState: GameState,
-    dispatch: React.Dispatch<GameAction>
-}
+function Game() {
+    const [gameState, dispatch] = useReducer(reducer, {}, createInitialState);
 
-function Game({ gameState, dispatch }: Props) {
     useTick(deltaTime => {
         if (gameState.status !== GameStatus.Playing)
             return;
@@ -60,7 +60,6 @@ function Game({ gameState, dispatch }: Props) {
             gameState.player.y > PLAYER_ORIGINAL_Y_POS - 10) {
             dispatch({ type: "player_reset_fall" });
         }
-
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -100,26 +99,7 @@ function Game({ gameState, dispatch }: Props) {
                 <Score score={gameState.score} />
             }
             {gameState.status === GameStatus.Initial &&
-                <>
-                    <Text
-                        text="Start game"
-                        anchor={0.5}
-                        x={APP_WIDTH / 2}
-                        y={APP_HEIGHT / 2}
-                        style={new TextStyle({
-                            fontSize: 50
-                        })}
-                    />
-                    <Text
-                        text="Press spacebar to start"
-                        anchor={0.5}
-                        x={APP_WIDTH / 2}
-                        y={APP_HEIGHT / 2 + 40}
-                        style={new TextStyle({
-                            fontSize: 15
-                        })}
-                    />
-                </>
+               <StartGameText />
             }
             {gameState.status === GameStatus.GameOver &&
                 <>

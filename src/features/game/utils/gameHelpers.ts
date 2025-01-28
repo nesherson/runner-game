@@ -7,9 +7,24 @@ import {
   OBSTACLE_MIN_SPACING,
   OBSTACLE_WIDTH,
   PLAYER_HEIGHT,
+  PLAYER_ORIGINAL_Y_POS,
   PLAYER_WIDTH,
 } from "../constants";
-import { Obstacle, Player } from "../types/types";
+import { GameStatus, Obstacle, Player } from "../types/types";
+
+export function createInitialState() {
+    return {
+        status: GameStatus.Initial,
+        score: 0,
+        player: {
+            x: 30,
+            y: PLAYER_ORIGINAL_Y_POS,
+            isJumping: false,
+            isFalling: false
+        },
+        obstacles: createObstacles()
+    }
+}
 
 export function createObstacles() {
   const obstacles: Obstacle[] = [];
