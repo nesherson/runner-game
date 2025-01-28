@@ -41,24 +41,18 @@ function Game() {
             return;
         }
 
-        if (gameState.player.isJumping &&
-            gameState.player.y > PLAYER_ORIGINAL_Y_POS - PLAYER_JUMP_HEIGHT) {
-            dispatch({ type: "decrease_player_y_pos", deltaTime: deltaTime });
+        if (gameState.player.isJumping) {
+            if (gameState.player.y > PLAYER_ORIGINAL_Y_POS - PLAYER_JUMP_HEIGHT) {
+                dispatch({ type: "decrease_player_y_pos", deltaTime: deltaTime });
+            }
+            else {
+                dispatch({ type: "player_jump" });
+            }
         }
-
-        if (gameState.player.isFalling &&
-            gameState.player.y < PLAYER_ORIGINAL_Y_POS) {
-            dispatch({ type: "increase_player_y_pos", deltaTime: deltaTime });
-        }
-
-        if (gameState.player.y <= PLAYER_ORIGINAL_Y_POS - PLAYER_JUMP_HEIGHT &&
-            !gameState.player.isFalling) {
-            dispatch({ type: "player_fall" });
-        }
-
-        if (gameState.player.isFalling &&
-            gameState.player.y > PLAYER_ORIGINAL_Y_POS - 10) {
-            dispatch({ type: "player_reset_fall" });
+        else {
+            if (gameState.player.y < PLAYER_ORIGINAL_Y_POS) {
+                dispatch({ type: "increase_player_y_pos", deltaTime: deltaTime });
+            }
         }
     });
 
@@ -74,9 +68,7 @@ function Game() {
                 return;
             }
 
-            if (!gameState.player.isJumping &&
-                !gameState.player.isFalling
-            ) {
+            if (gameState.player.y >= PLAYER_ORIGINAL_Y_POS) {
                 playJumpSound();
                 dispatch({ type: "player_jump", isJumping: true });
             }
@@ -99,7 +91,7 @@ function Game() {
                 <Score score={gameState.score} />
             }
             {gameState.status === GameStatus.Initial &&
-               <StartGameText />
+                <StartGameText />
             }
             {gameState.status === GameStatus.GameOver &&
                 <>

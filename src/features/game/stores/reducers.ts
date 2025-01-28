@@ -30,8 +30,7 @@ export function reducer(state: GameState, action: GameAction): GameState {
         player: {
           x: 30,
           y: PLAYER_ORIGINAL_Y_POS,
-          isJumping: false,
-          isFalling: false,
+          isJumping: false
         },
         obstacles: createObstacles(),
       };
@@ -56,25 +55,7 @@ export function reducer(state: GameState, action: GameAction): GameState {
         ...state,
         player: {
           ...state.player,
-          isJumping: true,
-          isFalling: false,
-        },
-      };
-    case "player_fall":
-      return {
-        ...state,
-        player: {
-          ...state.player,
-          isJumping: false,
-          isFalling: true,
-        },
-      };
-    case "player_reset_fall":
-      return {
-        ...state,
-        player: {
-          ...state.player,
-          isFalling: false,
+          isJumping: !state.player.isJumping
         },
       };
     case "increase_score":

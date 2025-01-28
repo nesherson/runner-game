@@ -9,6 +9,10 @@ import {
   PLAYER_HEIGHT,
   PLAYER_ORIGINAL_Y_POS,
   PLAYER_WIDTH,
+  PLAYER_X_COLLISION_OFFSET,
+  PLAYER_Y_COLLISION_OFFSET,
+  X_COLLISION_OFFSET,
+  Y_COLLISION_OFFSET,
 } from "../constants";
 import { GameStatus, Obstacle, Player } from "../types/types";
 
@@ -49,10 +53,10 @@ export function createObstacles() {
 export function hasPlayerCollided(player: Player, obstacles: Obstacle[]) {
   return obstacles.some(
     (o) =>
-      o.x < player.x + PLAYER_WIDTH &&
-      o.x + OBSTACLE_WIDTH > player.x &&
-      o.y < player.y + PLAYER_HEIGHT &&
-      o.y + OBSTACLE_HEIGHT > player.y
+      o.x < player.x + PLAYER_WIDTH - X_COLLISION_OFFSET &&
+      o.x + OBSTACLE_WIDTH - X_COLLISION_OFFSET > player.x &&
+      o.y < player.y + PLAYER_HEIGHT - Y_COLLISION_OFFSET &&
+      o.y + OBSTACLE_HEIGHT - Y_COLLISION_OFFSET > player.y
   );
 }
 
