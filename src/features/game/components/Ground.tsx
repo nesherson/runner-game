@@ -2,7 +2,7 @@ import { TilingSprite, useTick } from "@pixi/react";
 import { useState } from "react";
 
 import { Texture } from "pixi.js";
-import { APP_HEIGHT, APP_WIDTH, GROUND_HEIGHT, GROUND_SPEED_MULTIPLIER, GROUND_Y_SCALE } from "../constants";
+import { APP_HEIGHT, APP_WIDTH, GROUND_HEIGHT, GROUND_SPEED, GROUND_Y_SCALE } from "../constants";
 
 const groundTexture = Texture.from("/assets/ground/ground.png");
 
@@ -17,7 +17,7 @@ function Ground({ isGamePlaying }: Props) {
         if (!isGamePlaying)
             return;
 
-        setXPos(prev => prev - GROUND_SPEED_MULTIPLIER * d);
+        setXPos(prev => prev - GROUND_SPEED * d);
     });
 
     return (

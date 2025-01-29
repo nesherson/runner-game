@@ -5,32 +5,59 @@ import {
   APP_HEIGHT,
   APP_WIDTH,
   GROUND_HEIGHT,
-  OBSTACLE_HEIGHT,
   OBSTACLE_MAX_SPACING,
   OBSTACLE_MIN_SPACING,
-  OBSTACLE_WIDTH,
+  OBSTACLE_SIZE_SCALE,
   PLAYER_HEIGHT,
   PLAYER_ORIGINAL_Y_POS,
   PLAYER_WIDTH,
-  X_COLLISION_OFFSET,
-  Y_COLLISION_OFFSET,
 } from "../constants";
 import { GameStatus, Obstacle, Player } from "../types/types";
 
-const enemyZeroTextures = [
-  Texture.from("/assets/obstacles/enemy-0-start.png"),
-  Texture.from("/assets/obstacles/enemy-0-end.png"),
+type ObstacleData = {
+  textures: Texture[];
+  width: number;
+  height: number;
+  animationSpeed: number;
+};
+
+const obstacleOneTextures = [
+  Texture.from("/assets/obstacles/obstacle-1-1.png"),
+  Texture.from("/assets/obstacles/obstacle-1-2.png"),
 ];
-const enemyOneTextures = [
-  Texture.from("/assets/obstacles/enemy-1-start.png"),
-  Texture.from("/assets/obstacles/enemy-1-end.png"),
+const obstacleTwoTextures = [
+  Texture.from("/assets/obstacles/obstacle-2-1.png"),
+  Texture.from("/assets/obstacles/obstacle-2-2.png"),
+];
+const obstacleThreeTextures = [
+  Texture.from("/assets/obstacles/obstacle-3-1.png"),
+  Texture.from("/assets/obstacles/obstacle-3-2.png"),
 ];
 const playerTextures = [
-  Texture.from("/assets/player/player-start.png"),
-  Texture.from("/assets/player/player-end.png"),
+  Texture.from("/assets/player/player-1.png"),
+  Texture.from("/assets/player/player-2.png"),
 ];
 
-const obstacleTextures = [enemyZeroTextures, enemyOneTextures];
+const obstacleSeed: ObstacleData[] = [
+  {
+    textures: obstacleOneTextures,
+    width: 20 * OBSTACLE_SIZE_SCALE,
+    height: 23 * OBSTACLE_SIZE_SCALE,
+    animationSpeed: ANIMATION_SPEED,
+  },
+  {
+    textures: obstacleTwoTextures,
+    width: 18 * OBSTACLE_SIZE_SCALE,
+    height: 18 * OBSTACLE_SIZE_SCALE,
+    animationSpeed: ANIMATION_SPEED,
+  },
+  {
+    textures: obstacleThreeTextures,
+    width: 20 * OBSTACLE_SIZE_SCALE,
+    height: 23 * OBSTACLE_SIZE_SCALE,
+    animationSpeed: ANIMATION_SPEED,
+  },
+];
 
 export function createInitialState() {
   return {
@@ -53,14 +80,9 @@ export function createObstacles() {
   let prevPosX = APP_WIDTH;
 
   for (let i = 0; i < 3; i++) {
-    const obstacle: Obstacle = {
-      x: 0,
-      y: 0,
-      textures: [],
-    };
+    const obstacle = getRandomObstacle();
 
-    obstacle.textures = getRandomObstacleTextures();
-    obstacle.y = APP_HEIGHT - GROUND_HEIGHT - OBSTACLE_HEIGHT;
+    obstacle.y = APP_HEIGHT - GROUND_HEIGHT - obstacle.height;
     obstacle.x =
       prevPosX +
       (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) +
@@ -74,13 +96,11 @@ export function createObstacles() {
 }
 
 export function hasPlayerCollided(player: Player, obstacles: Obstacle[]) {
-  return obstacles.some(
-    (o) =>
-      o.x < player.x + PLAYER_WIDTH - X_COLLISION_OFFSET &&
-      o.x + OBSTACLE_WIDTH - X_COLLISION_OFFSET > player.x &&
-      o.y < player.y + PLAYER_HEIGHT - Y_COLLISION_OFFSET &&
-      o.y + OBSTACLE_HEIGHT - Y_COLLISION_OFFSET > player.y
-  );
+  return obstacles.some((o) =>
+    o.x < player.x + PLAYER_WIDTH &&
+    o.x + o.width > player.x &&
+    o.y < player.y + PLAYER_HEIGHT &&
+    o.y + o.height > player.y);
 }
 
 export function isScoreMilestone(score: number) {
@@ -89,6 +109,15 @@ export function isScoreMilestone(score: number) {
   return score % 100 === 0;
 }
 
-export function getRandomObstacleTextures() {
-  return obstacleTextures[Math.floor(Math.random() * 2)];
+export function getRandomObstacle(): Obstacle {
+  const data = obstacleSeed[Math.floor(Math.random() * obstacleSeed.length)];
+
+  return {
+    x: 0,
+    y: 0,
+    width: data.width,
+    height: data.height,
+    animationSpeed: data.animationSpeed,
+    textures: data.textures,
+  };
 }

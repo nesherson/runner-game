@@ -1,15 +1,16 @@
 import {
   ANIMATION_SPEED,
+  APP_HEIGHT,
+  GROUND_HEIGHT,
   OBSTACLE_MAX_SPACING,
   OBSTACLE_MIN_SPACING,
-  OBSTACLE_SPEED_MULTIPLIER,
-  OBSTACLE_WIDTH,
+  OBSTACLE_SPEED,
   PLAYER_FALL_STRENGTH,
   PLAYER_JUMP_STRENGTH,
-  SCORE_INCREASE_MULTIPLIER,
+  SCORE_INCREASE,
 } from "../constants";
 import { GameAction, GameState, GameStatus } from "../types/types";
-import { createInitialState } from "../utils/gameHelpers";
+import { createInitialState, getRandomObstacle } from "../utils/gameHelpers";
 
 export function reducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -55,27 +56,32 @@ export function reducer(state: GameState, action: GameAction): GameState {
     case "increase_score":
       return {
         ...state,
-        score: state.score + 1 * SCORE_INCREASE_MULTIPLIER,
+        score: state.score + 1 * SCORE_INCREASE,
       };
     case "move_obstacles": {
       const lastPositionedObstacle = state.obstacles.reduce((a, b) =>
         a.x > b.x ? a : b
       );
+      const currentObstacles = [...state.obstacles];
+
+      currentObstacles.forEach((o) => {
+        if (o.x < -o.width) {
+          const newObstacle = getRandomObstacle();
+          o.x = lastPositionedObstacle.x +
+            (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) + OBSTACLE_MIN_SPACING);
+          o.textures = newObstacle.textures;
+          o.animationSpeed = newObstacle.animationSpeed;
+          o.width = newObstacle.width;
+          o.height = newObstacle.height;
+          o.y = APP_HEIGHT - GROUND_HEIGHT - newObstacle.height;
+        } else {
+          o.x -= OBSTACLE_SPEED * action.deltaTime!;
+        }
+      });
 
       return {
         ...state,
-        obstacles: state.obstacles.map((o) => {
-          if (o.x < -OBSTACLE_WIDTH) {
-            o.x =
-              lastPositionedObstacle.x +
-              (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) +
-                OBSTACLE_MIN_SPACING);
-          } else {
-            o.x -= OBSTACLE_SPEED_MULTIPLIER * action.deltaTime!;
-          }
-
-          return o;
-        }),
+        obstacles: currentObstacles,
       };
     }
     default:

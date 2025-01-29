@@ -25,7 +25,10 @@ export type GameAction = {
 export type Obstacle = {
   x: number;
   y: number;
+  width: number;
+  height: number;
   textures: Texture[];
+  animationSpeed: number;
 };
 
 export enum GameStatus {
