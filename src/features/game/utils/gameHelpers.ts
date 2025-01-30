@@ -5,12 +5,15 @@ import {
   APP_HEIGHT,
   APP_WIDTH,
   GROUND_HEIGHT,
+  OBSTACLE_COUNT,
   OBSTACLE_MAX_SPACING,
   OBSTACLE_MIN_SPACING,
   OBSTACLE_SIZE_SCALE,
   PLAYER_HEIGHT,
   PLAYER_ORIGINAL_Y_POS,
   PLAYER_WIDTH,
+  X_COLLISION_OFFSET,
+  Y_COLLISION_OFFSET
 } from "../constants";
 import { GameStatus, Obstacle, Player } from "../types/types";
 
@@ -79,7 +82,7 @@ export function createObstacles() {
   const obstacles: Obstacle[] = [];
   let prevPosX = APP_WIDTH;
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < OBSTACLE_COUNT; i++) {
     const obstacle = getRandomObstacle();
 
     obstacle.y = APP_HEIGHT - GROUND_HEIGHT - obstacle.height;
@@ -97,16 +100,16 @@ export function createObstacles() {
 
 export function hasPlayerCollided(player: Player, obstacles: Obstacle[]) {
   return obstacles.some((o) =>
-    o.x < player.x + PLAYER_WIDTH &&
+    o.x < player.x + PLAYER_WIDTH - X_COLLISION_OFFSET &&
     o.x + o.width > player.x &&
-    o.y < player.y + PLAYER_HEIGHT &&
+    o.y < player.y + PLAYER_HEIGHT - Y_COLLISION_OFFSET &&
     o.y + o.height > player.y);
 }
 
 export function isScoreMilestone(score: number) {
   if (score === 0) return false;
 
-  return score % 100 === 0;
+  return Math.round(score % 100) === 100;
 }
 
 export function getRandomObstacle(): Obstacle {

@@ -22,6 +22,7 @@ function Background({ isGamePlaying }: Props) {
 
     return <TilingSprite
         texture={backgroundTexture}
+        scale={{ x: 1.5, y: 1.5 }}
         width={APP_WIDTH}
         height={APP_HEIGHT}
         tilePosition={{ x: xPos, y: 0 }}

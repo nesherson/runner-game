@@ -7,7 +7,8 @@ import {
   OBSTACLE_SPEED,
   PLAYER_FALL_STRENGTH,
   PLAYER_JUMP_STRENGTH,
-  SCORE_INCREASE,
+  PLAYER_ORIGINAL_Y_POS,
+  SCORE_INCREASE
 } from "../constants";
 import { GameAction, GameState, GameStatus } from "../types/types";
 import { createInitialState, getRandomObstacle } from "../utils/gameHelpers";
@@ -35,11 +36,17 @@ export function reducer(state: GameState, action: GameAction): GameState {
         },
       };
     case "increase_player_y_pos":
+      let newPlayerYPos = state.player.y + PLAYER_FALL_STRENGTH * action.deltaTime!;
+
+      if (newPlayerYPos > PLAYER_ORIGINAL_Y_POS) {
+        newPlayerYPos = PLAYER_ORIGINAL_Y_POS;
+      }
+
       return {
         ...state,
         player: {
           ...state.player,
-          y: state.player.y + PLAYER_FALL_STRENGTH * action.deltaTime!,
+          y: newPlayerYPos,
         },
       };
     case "player_jump":
@@ -56,7 +63,7 @@ export function reducer(state: GameState, action: GameAction): GameState {
     case "increase_score":
       return {
         ...state,
-        score: state.score + 1 * SCORE_INCREASE,
+        score: (state.score + 1 * SCORE_INCREASE),
       };
     case "move_obstacles": {
       const lastPositionedObstacle = state.obstacles.reduce((a, b) =>
@@ -66,14 +73,15 @@ export function reducer(state: GameState, action: GameAction): GameState {
 
       currentObstacles.forEach((o) => {
         if (o.x < -o.width) {
-          const newObstacle = getRandomObstacle();
+          const obstacle = getRandomObstacle();
+
+          o.textures = obstacle.textures;
           o.x = lastPositionedObstacle.x +
             (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) + OBSTACLE_MIN_SPACING);
-          o.textures = newObstacle.textures;
-          o.animationSpeed = newObstacle.animationSpeed;
-          o.width = newObstacle.width;
-          o.height = newObstacle.height;
-          o.y = APP_HEIGHT - GROUND_HEIGHT - newObstacle.height;
+          o.y = APP_HEIGHT - GROUND_HEIGHT - obstacle.height;
+          o.animationSpeed = obstacle.animationSpeed;
+          o.width = obstacle.width;
+          o.height = obstacle.height;
         } else {
           o.x -= OBSTACLE_SPEED * action.deltaTime!;
         }
