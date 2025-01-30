@@ -15,7 +15,7 @@ function GameOverText() {
                 })}
             />
             <Text
-                text="Press spacebar to restart"
+                text="Click or press spacebar to restart"
                 anchor={0.5}
                 x={APP_WIDTH / 2}
                 y={APP_HEIGHT / 2 + 40}

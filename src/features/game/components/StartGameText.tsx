@@ -15,7 +15,7 @@ function StartGameText() {
                 })}
             />
             <Text
-                text="Press spacebar to start"
+                text="Click or press spacebar to start"
                 anchor={0.5}
                 x={APP_WIDTH / 2}
                 y={APP_HEIGHT / 2 + 40}

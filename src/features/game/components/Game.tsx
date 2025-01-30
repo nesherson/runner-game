@@ -1,4 +1,4 @@
-import { Container, useApp, useTick, Text } from "@pixi/react";
+import { Container, Text, useTick } from "@pixi/react";
 import { useEventListener } from "@react-hookz/web";
 import { useReducer } from "react";
 
@@ -8,6 +8,7 @@ import Obstacles from "./Obstacles";
 import Player from "./Player";
 import Score from "./Score";
 
+import { Application, TextStyle } from "pixi.js";
 import {
     PLAYER_JUMP_HEIGHT,
     PLAYER_ORIGINAL_Y_POS
@@ -18,18 +19,13 @@ import { createInitialState, hasPlayerCollided, isScoreMilestone } from "../util
 import { playCollisionSound, playJumpSound, playScoreMilestone } from "../utils/soundHelpers";
 import GameOverText from "./GameOverText";
 import StartGameText from "./StartGameText";
-import { TextStyle } from "pixi.js";
 
-function Game() {
+function Game({ app }: { app: Application }) {
     const [gameState, dispatch] = useReducer(reducer, {}, createInitialState);
-    const app = useApp();
 
     useTick(deltaTime => {
         if (gameState.status !== GameStatus.Playing)
             return;
-
-        dispatch({ type: "increase_score" });
-        dispatch({ type: "move_obstacles", deltaTime: deltaTime });
 
         if (isScoreMilestone(gameState.score)) {
             playScoreMilestone();
@@ -54,6 +50,9 @@ function Game() {
                 dispatch({ type: "increase_player_y_pos", deltaTime: deltaTime });
             }
         }
+
+        dispatch({ type: "increase_score" });
+        dispatch({ type: "move_obstacles", deltaTime: deltaTime });
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -75,9 +74,34 @@ function Game() {
         }
     }
 
+    const handleMouseDown = () => {
+        if (gameState.status === GameStatus.Initial) {
+            dispatch({ type: "start_game" });
+            return;
+        }
+
+        if (gameState.status === GameStatus.GameOver) {
+            dispatch({ type: "restart_game" });
+            return;
+        }
+
+        if (gameState.player.y >= PLAYER_ORIGINAL_Y_POS) {
+            playJumpSound();
+            dispatch({ type: "player_jump" });
+        }
+    }
+
     useEventListener(window,
         "keydown",
         handleKeyDown,
+        {
+            passive: true
+        }
+    );
+
+    useEventListener(window,
+        "mousedown",
+        handleMouseDown,
         {
             passive: true
         }
