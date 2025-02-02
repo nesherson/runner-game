@@ -10,12 +10,11 @@ import {
   OBSTACLE_MIN_SPACING,
   OBSTACLE_SIZE_SCALE,
   PLAYER_HEIGHT,
-  PLAYER_ORIGINAL_Y_POS,
   PLAYER_WIDTH,
   X_COLLISION_OFFSET,
   Y_COLLISION_OFFSET
 } from "../constants";
-import { GameStatus, Obstacle, Player } from "../types/types";
+import { GameState, GameStatus, Obstacle, Player } from "../types/types";
 
 type ObstacleData = {
   textures: Texture[];
@@ -62,21 +61,61 @@ const obstacleSeed: ObstacleData[] = [
   },
 ];
 
-export function createInitialState() {
+
+export function createInitialState(): GameState {
   return {
     status: GameStatus.Initial,
     score: 0,
     player: {
-      x: 30,
-      y: PLAYER_ORIGINAL_Y_POS,
+      x: 0,
+      y: 0,
       isJumping: false,
-      isFalling: false,
       animationSpeed: ANIMATION_SPEED,
       textures: playerTextures,
     },
     obstacles: createObstacles(),
   };
 }
+
+export function createInitialGameSettings(appW: number, appH: number) {
+  let appWidth = appW;
+  let appHeight = appH;
+  let sizeScale = appWidth / appHeight * 1.65;
+  let groundHeight = sizeScale * 18;
+  let playerHeight = 23 * sizeScale;
+  let playerWidth = 20 * sizeScale;
+  let playerOriginalYPos = appHeight - groundHeight - playerHeight;
+  let backgroundSpeed = 0.7;
+  let groundSpeed = 2.95;
+
+  return {
+    appWidth,
+    appHeight,
+    sizeScale,
+    groundHeight,
+    playerHeight,
+    playerWidth,
+    playerOriginalYPos,
+    backgroundSpeed,
+    groundSpeed
+  };
+}
+
+// export function createInitialState() {
+//   return {
+//     status: GameStatus.Initial,
+//     score: 0,
+//     player: {
+//       x: 30,
+//       y: PLAYER_ORIGINAL_Y_POS,
+//       isJumping: false,
+//       isFalling: false,
+//       animationSpeed: ANIMATION_SPEED,
+//       textures: playerTextures,
+//     },
+//     obstacles: createObstacles(),
+//   };
+// }
 
 export function createObstacles() {
   const obstacles: Obstacle[] = [];

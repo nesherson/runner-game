@@ -23,6 +23,6 @@ export const PLAYER_JUMP_STRENGTH = 5.4;
 export const PLAYER_FALL_STRENGTH = 5.55;
 export const PLAYER_ORIGINAL_Y_POS = APP_HEIGHT - GROUND_HEIGHT - PLAYER_HEIGHT;
 
-export const SCORE_INCREASE = 0.3;
+export const SCORE_INCREASE_SPEED = 0.3;
 export const X_COLLISION_OFFSET = 3;
 export const Y_COLLISION_OFFSET = 3;
