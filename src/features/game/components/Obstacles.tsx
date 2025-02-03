@@ -1,8 +1,8 @@
 import { AnimatedSprite, Container } from "@pixi/react";
 
-import { AnimatedSprite as AnimatedSpriteType, ColorMatrixFilter } from "pixi.js";
+import { type AnimatedSprite as AnimatedSpriteType, ColorMatrixFilter } from "pixi.js";
 import { useEffect, useRef } from "react";
-import { Obstacle } from "../types/types";
+import type { Obstacle } from "../types/types";
 
 interface ObstaclesProps {
     obstacles: Obstacle[]

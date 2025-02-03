@@ -16,7 +16,7 @@ function Score({ appWidth, appHeight, sizeScale, score }: Props) {
             x={appWidth * 0.9}
             y={appHeight * 0.05}
             style={new TextStyle({
-                fontSize: 15 * sizeScale
+                fontSize: 10 * sizeScale
             })}
         />
     );

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { playerTextures } from "../textures/textures";
-import { GameState, GameStateStoreAction, GameStatus } from "../types/types";
+import { type GameState, type GameStateStoreAction, GameStatus } from "../types/types";
 import { createObstacles, getRandomObstacleData } from "../utils/gameHelpers";
 import { useGameSettingsStore } from "./gameSettingsStore";
 
@@ -71,20 +71,20 @@ export const useGameStateStore = create<GameState & GameStateStoreAction>((set) 
             );
             const currentObstacles = [...state.obstacles];
 
-            currentObstacles.forEach((o) => {
-                if (o.x < -o.width) {
-                    const obstacle = getRandomObstacleData();
+            for (const obstacle of currentObstacles) {
+                if (obstacle.x < -obstacle.width) {
+                    const randomObstacleData = getRandomObstacleData();
 
-                    o.textures = obstacle.textures;
-                    o.x = lastPositionedObstacle.x +
+                    obstacle.textures = randomObstacleData.textures;
+                    obstacle.x = lastPositionedObstacle.x +
                         (Math.random() * (obstacleMaxSpacing - obstacleMinSpacing) + obstacleMinSpacing);
-                    o.y = appHeight - groundHeight - obstacle.height * sizeScale;
-                    o.width = obstacle.width * sizeScale;
-                    o.height = obstacle.height * sizeScale;
+                    obstacle.y = appHeight - groundHeight - randomObstacleData.height * sizeScale;
+                    obstacle.width = randomObstacleData.width * sizeScale;
+                    obstacle.height = randomObstacleData.height * sizeScale;
                 } else {
-                    o.x -= obstacleSpeed * deltaTime;
-                }
-            });
+                    obstacle.x -= obstacleSpeed * deltaTime;
+                } 
+            }
 
             return {
                 obstacles: currentObstacles
