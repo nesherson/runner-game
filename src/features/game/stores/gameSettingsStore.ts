@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { GameSettings, GameSettingsStoreAction, SizeScalingOption } from "../types/types";
+import { type GameSettings, type GameSettingsStoreAction, SizeScalingOption } from "../types/types";
 
 export const useGameSettingsStore = create<GameSettings & GameSettingsStoreAction>((set) => ({
     ...createInitialGameSettings(),

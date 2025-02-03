@@ -1,4 +1,4 @@
-import { Texture } from "pixi.js";
+import type { Texture } from "pixi.js";
 
 export type GameState = {
   status: GameStatus
@@ -79,13 +79,13 @@ export type ObstacleData = {
 }
 
 export enum SizeScalingOption {
-  WidthDividedByHeight,
-  HeightDividedByWidth
+  WidthDividedByHeight = 0,
+  HeightDividedByWidth = 1
 }
 
 export enum GameStatus {
-  Initial,
-  Playing,
-  GameOver
+  Initial = 0,
+  Playing = 1,
+  GameOver = 2
 }
 

@@ -1,20 +1,18 @@
 import { AnimatedSprite } from "@pixi/react";
 
-import { Player as PlayerType } from "../types/types";
+import type { Player as PlayerType } from "../types/types";
 
 interface Props {
   player: PlayerType,
-  isGamePlaying: boolean,
-  playerHeight: number,
-  playerWidth: number
+  isGamePlaying: boolean
 }
 
-function Player({ player, isGamePlaying, playerWidth, playerHeight }: Props) {
+function Player({ player, isGamePlaying }: Props) {
   return (
     <AnimatedSprite
       textures={player.textures}
-      height={playerHeight}
-      width={playerWidth}
+      height={player.height}
+      width={player.width}
       x={player.x}
       y={player.y}
       animationSpeed={player.animationSpeed}
