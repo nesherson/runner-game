@@ -1,11 +1,11 @@
 import { Container, Text, useTick } from "@pixi/react";
 import { useEventListener, useWindowSize } from "@react-hookz/web";
 import { useEffect } from "react";
+import { type Application, TextStyle } from "pixi.js";
 
 import Background from "./Background";
 import Ground from "./Ground";
 
-import { type Application, TextStyle } from "pixi.js";
 import { useGameSettingsStore, useGameStateStore } from "../stores";
 import { SizeScalingOption } from "../types/types";
 import { GameStatus } from "../types/types";
@@ -36,7 +36,6 @@ function Game({ app }: { app: Application }) {
 	const score = useGameStateStore((state) => state.score);
 	const player = useGameStateStore((state) => state.player);
 	const obstacles = useGameStateStore((state) => state.obstacles);
-	const playerStartPosY = useGameStateStore((state) => state.player.startPosY);
 
 	const resetSettings = useGameSettingsStore((state) => state.resetSettings);
 	const updateScaling = useGameSettingsStore((state) => state.updateScaling);
@@ -49,9 +48,6 @@ function Game({ app }: { app: Application }) {
 	const endGame = useGameStateStore((state) => state.endGame);
 	const decreasePlayerYPos = useGameStateStore(
 		(state) => state.decreasePlayerYPos,
-	);
-	const increasePlayerYPos = useGameStateStore(
-		(state) => state.increasePlayerYPos,
 	);
 
 	useEffect(() => {
@@ -85,18 +81,7 @@ function Game({ app }: { app: Application }) {
 			return;
 		}
 
-		if (player.isJumping) {
-			if (player.y > player.startPosY - player.jumpHeight) {
-				decreasePlayerYPos(deltaTime);
-			} else {
-				playerJump();
-			}
-		} else {
-			if (player.y < player.startPosY) {
-				increasePlayerYPos(deltaTime);
-			}
-		}
-
+		decreasePlayerYPos(deltaTime);
 		increaseScore();
 		moveObstacles(deltaTime);
 	});
@@ -112,7 +97,7 @@ function Game({ app }: { app: Application }) {
 			return;
 		}
 
-		if (player.y >= playerStartPosY) {
+		if (!player.isJumping) {
 			playJumpSound();
 			playerJump();
 		}

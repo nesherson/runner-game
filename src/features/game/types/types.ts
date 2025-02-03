@@ -18,7 +18,11 @@ export type Player = {
   textures: Texture[]
   jumpHeight: number
   jumpStrength: number
-  fallStrength: number
+  fallStrength: number,
+  jumpDirection: number, 
+  gravity: number,
+  power: number,
+  time: number
 }
 
 export type GameAction = {
@@ -42,14 +46,12 @@ export type GameStateStoreAction = {
   endGame: () => void
   restartGame: () => void
   decreasePlayerYPos: (deltaTime: number) => void
-  increasePlayerYPos: (deltaTime: number) => void
   playerJump: () => void
   increaseScore: () => void
   moveObstacles: (deltaTime: number) => void
   resetState: () => void
-  setPlayerStartingPosition: (startPosX: number, startPosY: number) => void
 }
-
+ 
 export type GameSettings = {
   appWidth: number
   appHeight: number
