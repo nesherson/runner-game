@@ -1,5 +1,5 @@
 import { TilingSprite, useTick } from "@pixi/react";
-import { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS, useState } from "react";
+import { useState } from "react";
 
 import { Texture } from "pixi.js";
 
