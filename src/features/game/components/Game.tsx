@@ -1,94 +1,132 @@
 import { Container, Text, useTick } from "@pixi/react";
-import { useEventListener } from "@react-hookz/web";
-import { useReducer } from "react";
+import { useEventListener, useWindowSize } from "@react-hookz/web";
+import { useEffect } from "react";
 
 import Background from "./Background";
 import Ground from "./Ground";
-import Obstacles from "./Obstacles";
-import Player from "./Player";
-import Score from "./Score";
 
 import { Application, TextStyle } from "pixi.js";
-import {
-    PLAYER_JUMP_HEIGHT,
-    PLAYER_ORIGINAL_Y_POS
-} from "../constants";
-import { reducer } from "../stores/reducers";
+import { useGameSettingsStore, useGameStateStore } from "../stores";
+import { SizeScalingOption } from "../types/types";
 import { GameStatus } from "../types/types";
-import { createInitialState, hasPlayerCollided, isScoreMilestone } from "../utils/gameHelpers";
+import { hasPlayerCollided, isScoreMilestone } from "../utils/gameHelpers";
 import { playCollisionSound, playJumpSound, playScoreMilestone } from "../utils/soundHelpers";
+import Player from "./Player";
+import Score from "./Score";
 import GameOverText from "./GameOverText";
-import StartGameText from "./StartGameText";
+import GameStartText from "./GameStartText";
+import Obstacles from "./Obstacles";
 
 function Game({ app }: { app: Application }) {
-    const [gameState, dispatch] = useReducer(reducer, {}, createInitialState);
+    const { width: windowWidth, height: windowHeight } = useWindowSize();
+
+    const appHeight = useGameSettingsStore((state) => state.appHeight);
+    const appWidth = useGameSettingsStore((state) => state.appWidth);
+    const backgroundSpeed = useGameSettingsStore((state) => state.backgroundSpeed);
+    const groundHeight = useGameSettingsStore((state) => state.groundHeight);
+    const groundSpeed = useGameSettingsStore((state) => state.groundSpeed);
+    const sizeScale = useGameSettingsStore((state) => state.sizeScale);
+    const playerWidth = useGameStateStore((state) => state.player.width);
+    const playerHeight = useGameStateStore((state) => state.player.height);
+    const gameStatus = useGameStateStore((state) => state.status);
+    const score = useGameStateStore((state) => state.score);
+    const player = useGameStateStore((state) => state.player);
+    const obstacles = useGameStateStore((state) => state.obstacles);
+    const playerStartPosY = useGameStateStore((state) => state.player.startPosY);
+
+    const resetSettings = useGameSettingsStore(state => state.resetSettings);
+    const updateScaling = useGameSettingsStore(state => state.updateScaling);
+    const resetGameState = useGameStateStore(state => state.resetState);
+    const increaseScore = useGameStateStore(state => state.increaseScore);
+    const moveObstacles = useGameStateStore(state => state.moveObstacles);
+    const playerJump = useGameStateStore(state => state.playerJump);
+    const startGame = useGameStateStore(state => state.startGame);
+    const restartGame = useGameStateStore(state => state.restartGame);
+    const endGame = useGameStateStore(state => state.endGame);
+    const decreasePlayerYPos = useGameStateStore(state => state.decreasePlayerYPos);
+    const increasePlayerYPos = useGameStateStore(state => state.increasePlayerYPos);
+
+    useEffect(() => {
+        if (windowHeight > windowWidth) {
+            updateScaling(SizeScalingOption.HeightDividedByWidth);
+        }
+        else {
+            updateScaling(SizeScalingOption.WidthDividedByHeight);
+        }
+
+        if (windowWidth >= 400 && windowWidth <= 800) {
+            app.renderer.resize(windowWidth, appHeight);
+            resetSettings(windowWidth, appHeight);
+            resetGameState();
+        }
+        else {
+            app.renderer.resize(800, 600);
+            resetSettings();
+            resetGameState();
+        }
+    }, [windowWidth]);
 
     useTick(deltaTime => {
-        if (gameState.status !== GameStatus.Playing)
+        if (gameStatus !== GameStatus.Playing)
             return;
 
-        if (isScoreMilestone(gameState.score)) {
+        if (isScoreMilestone(score)) {
             playScoreMilestone();
         }
 
-        if (hasPlayerCollided(gameState.player, gameState.obstacles)) {
+        if (hasPlayerCollided(player, obstacles)) {
             playCollisionSound();
-            dispatch({ type: "end_game" });
+            endGame();
             return;
         }
 
-        if (gameState.player.isJumping) {
-            if (gameState.player.y > PLAYER_ORIGINAL_Y_POS - PLAYER_JUMP_HEIGHT) {
-                dispatch({ type: "decrease_player_y_pos", deltaTime: deltaTime });
+        if (player.isJumping) {
+            if (player.y > player.startPosY - player.jumpHeight) {
+                decreasePlayerYPos(deltaTime);
             }
             else {
-                dispatch({ type: "player_jump" });
+                playerJump();
             }
         }
         else {
-            if (gameState.player.y < PLAYER_ORIGINAL_Y_POS) {
-                dispatch({ type: "increase_player_y_pos", deltaTime: deltaTime });
+            if (player.y < player.startPosY) {
+                increasePlayerYPos(deltaTime);
             }
         }
 
-        dispatch({ type: "increase_score" });
-        dispatch({ type: "move_obstacles", deltaTime: deltaTime });
+        increaseScore();
+        moveObstacles(deltaTime);
     });
+
+    const playGame = () => {
+        if (gameStatus === GameStatus.Initial) {
+            startGame();
+            return;
+        }
+
+        if (gameStatus === GameStatus.GameOver) {
+            restartGame();
+            return;
+        }
+
+        if (player.y >= playerStartPosY) {
+            playJumpSound();
+            playerJump();
+        }
+    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === " ") {
-            if (gameState.status === GameStatus.Initial) {
-                dispatch({ type: "start_game" });
-                return;
-            }
-
-            if (gameState.status === GameStatus.GameOver) {
-                dispatch({ type: "restart_game" });
-                return;
-            }
-
-            if (gameState.player.y >= PLAYER_ORIGINAL_Y_POS) {
-                playJumpSound();
-                dispatch({ type: "player_jump", isJumping: true });
-            }
+            playGame();
         }
     }
 
     const handleMouseDown = () => {
-        if (gameState.status === GameStatus.Initial) {
-            dispatch({ type: "start_game" });
-            return;
-        }
+        playGame();
+    }
 
-        if (gameState.status === GameStatus.GameOver) {
-            dispatch({ type: "restart_game" });
-            return;
-        }
-
-        if (gameState.player.y >= PLAYER_ORIGINAL_Y_POS) {
-            playJumpSound();
-            dispatch({ type: "player_jump" });
-        }
+    const handleTouchStart = () => {
+        playGame();
     }
 
     useEventListener(window,
@@ -107,10 +145,22 @@ function Game({ app }: { app: Application }) {
         }
     );
 
+    useEventListener(window,
+        "touchstart",
+        handleTouchStart,
+        {
+            passive: true
+        }
+    );
+
+
     return (
         <Container>
             <Background
-                isGamePlaying={gameState.status === GameStatus.Playing} />
+                appWidth={appWidth}
+                appHeight={appHeight}
+                backgroundSpeed={backgroundSpeed}
+                isGamePlaying={gameStatus === GameStatus.Playing} />
             {process.env.NODE_ENV === "development" &&
                 <Text
                     text={Math.trunc(app.ticker.FPS).toString()}
@@ -122,23 +172,40 @@ function Game({ app }: { app: Application }) {
                     })}
                 />
             }
-            {gameState.status !== GameStatus.Initial &&
-                <Score score={gameState.score} />
+            {gameStatus !== GameStatus.Initial &&
+                <Score
+                    appWidth={appWidth}
+                    appHeight={appHeight}
+                    sizeScale={sizeScale}
+                    score={score} />
             }
-            {gameState.status === GameStatus.Initial &&
-                <StartGameText />
+            {gameStatus === GameStatus.Initial &&
+                <GameStartText
+                    appWidth={appWidth}
+                    appHeight={appHeight}
+                    sizeScale={sizeScale} />
             }
-            {gameState.status === GameStatus.GameOver &&
-                <GameOverText />
+            {gameStatus === GameStatus.GameOver &&
+                <GameOverText
+                    appWidth={appWidth}
+                    appHeight={appHeight}
+                    sizeScale={sizeScale} />
             }
             <Player
-                player={gameState.player}
-                isGamePlaying={gameState.status === GameStatus.Playing} />
+                playerWidth={playerWidth}
+                playerHeight={playerHeight}
+                player={player}
+                isGamePlaying={gameStatus === GameStatus.Playing} />
             <Obstacles
-                obstacles={gameState.obstacles}
-                isGamePlaying={gameState.status === GameStatus.Playing} />
+                obstacles={obstacles}
+                isGamePlaying={gameStatus === GameStatus.Playing} />
             <Ground
-                isGamePlaying={gameState.status === GameStatus.Playing} />
+                appWidth={appWidth}
+                appHeight={appHeight}
+                groundHeight={groundHeight}
+                groundSpeed={groundSpeed}
+                sizeScale={sizeScale}
+                isGamePlaying={gameStatus === GameStatus.Playing} />
         </Container>
     )
 }

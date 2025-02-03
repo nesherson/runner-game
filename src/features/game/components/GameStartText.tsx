@@ -7,14 +7,14 @@ interface Props {
     sizeScale: number
 }
 
-function GameOverText({ appWidth, appHeight, sizeScale }: Props) {
+function GameStartText({ appWidth, appHeight, sizeScale }: Props) {
     const xPos = appWidth / 2;
     const yPos = appHeight / 2;
 
     return (
         <>
             <Text
-                text="Game over"
+                text="Start game"
                 anchor={0.5}
                 x={xPos}
                 y={yPos}
@@ -23,7 +23,7 @@ function GameOverText({ appWidth, appHeight, sizeScale }: Props) {
                 })}
             />
             <Text
-                text="Click or press spacebar to restart"
+                text="Click or press spacebar to start"
                 anchor={0.5}
                 x={xPos}
                 y={yPos + 40 * sizeScale}
@@ -35,4 +35,4 @@ function GameOverText({ appWidth, appHeight, sizeScale }: Props) {
     );
 }
 
-export default GameOverText;
+export default GameStartText;
