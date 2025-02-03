@@ -1,11 +1,12 @@
 import { create } from "zustand";
-import { OBSTACLE_MAX_SPACING, OBSTACLE_MIN_SPACING, SCORE_INCREASE_SPEED } from "../constants";
-import { GameState, GameStatus } from "../types/types";
-import { createInitialState, getRandomObstacle } from "../utils/gameHelpers";
+import { playerTextures } from "../textures/textures";
+import { GameState, GameStateStoreAction, GameStatus } from "../types/types";
+import { createObstacles, getRandomObstacleData } from "../utils/gameHelpers";
+import { useGameSettingsStore } from "./gameSettingsStore";
 
 export const useGameStateStore = create<GameState & GameStateStoreAction>((set) => ({
-    ...createInitialState(),
-    startGame: () => set(state => {
+    ...createInitialGameState(),
+    startGame: () => set(_ => {
         return {
             status: GameStatus.Playing
         }
@@ -14,21 +15,21 @@ export const useGameStateStore = create<GameState & GameStateStoreAction>((set) 
         status: GameStatus.GameOver
     })),
     restartGame: () => set(_ => ({
-        ...createInitialState()
+        ...createInitialGameState()
     })),
-    decreasePlayerYPos: (playerJumpStrength: number, deltaTime: number) => set(state => ({
-        player: {
-            ...state.player,
-            y: state.player.y - playerJumpStrength * deltaTime
+    decreasePlayerYPos: (deltaTime: number) => set(state => {
+        return {
+            player: {
+                ...state.player,
+                y: state.player.y - state.player.jumpStrength * deltaTime
+            }
         }
-    })),
-    increasePlayerYPos: (playerFallStrength: number,
-        playerOriginalYPos: number,
-        deltaTime: number) => set(state => {
-            let newPlayerYPos = state.player.y + playerFallStrength * deltaTime!;
+    }),
+    increasePlayerYPos: (deltaTime: number) => set(state => {
+            let newPlayerYPos = state.player.y + state.player.fallStrength * deltaTime;
 
-            if (newPlayerYPos > playerOriginalYPos) {
-                newPlayerYPos = playerOriginalYPos;
+            if (newPlayerYPos > state.player.startPosY) {
+                newPlayerYPos = state.player.startPosY;
             }
 
             return {
@@ -38,48 +39,59 @@ export const useGameStateStore = create<GameState & GameStateStoreAction>((set) 
                 }
             }
         }),
-    playerJump: (animationSpeed: number) => set(state => {
+    playerJump: () => set(state => {
+        const defaultAnimationSpeed = useGameSettingsStore.getState().defaultAnimationSpeed;
         const isJumping = !state.player.isJumping;
 
         return {
             player: {
                 ...state.player,
                 isJumping: isJumping,
-                animationSpeed: isJumping ? 0 : animationSpeed
+                animationSpeed: isJumping ? 0 : defaultAnimationSpeed
             }
         };
     }),
-    increaseScore: () => set(state => ({
-        score: state.score + 1 * SCORE_INCREASE_SPEED
-    })),
-    moveObstacles: (appHeight: number, groundHeight: number, obstacleSpeed: number, deltaTime: number) => set(state => {
-        const lastPositionedObstacle = state.obstacles.reduce((a, b) =>
-            a.x > b.x ? a : b
-        );
-        const currentObstacles = [...state.obstacles];
-
-        currentObstacles.forEach((o) => {
-            if (o.x < -o.width) {
-                const obstacle = getRandomObstacle();
-
-                o.textures = obstacle.textures;
-                o.x = lastPositionedObstacle.x +
-                    (Math.random() * (OBSTACLE_MAX_SPACING - OBSTACLE_MIN_SPACING) + OBSTACLE_MIN_SPACING);
-                o.y = appHeight - groundHeight - obstacle.height;
-                o.animationSpeed = obstacle.animationSpeed;
-                o.width = obstacle.width;
-                o.height = obstacle.height;
-            } else {
-                o.x -= obstacleSpeed * deltaTime!;
-            }
-        });
-
+    increaseScore: () => set(state => {
+        const scoreIncreaseSpeed = useGameSettingsStore.getState().scoreIncreaseSpeed;
+        
         return {
-            obstacles: currentObstacles
+            score: state.score + 1 * scoreIncreaseSpeed
         }
     }),
+    moveObstacles: (deltaTime: number) =>
+        set(state => {
+            const obstacleMinSpacing = useGameSettingsStore.getState().obstacleMinSpacing;
+            const obstacleMaxSpacing = useGameSettingsStore.getState().obstacleMaxSpacing;
+            const appHeight = useGameSettingsStore.getState().appHeight;
+            const groundHeight = useGameSettingsStore.getState().groundHeight;
+            const obstacleSpeed = useGameSettingsStore.getState().obstacleSpeed;
+            const sizeScale = useGameSettingsStore.getState().sizeScale;
+            const lastPositionedObstacle = state.obstacles.reduce((a, b) =>
+                a.x > b.x ? a : b
+            );
+            const currentObstacles = [...state.obstacles];
+
+            currentObstacles.forEach((o) => {
+                if (o.x < -o.width) {
+                    const obstacle = getRandomObstacleData();
+
+                    o.textures = obstacle.textures;
+                    o.x = lastPositionedObstacle.x +
+                        (Math.random() * (obstacleMaxSpacing - obstacleMinSpacing) + obstacleMinSpacing);
+                    o.y = appHeight - groundHeight - obstacle.height * sizeScale;
+                    o.width = obstacle.width * sizeScale;
+                    o.height = obstacle.height * sizeScale;
+                } else {
+                    o.x -= obstacleSpeed * deltaTime;
+                }
+            });
+
+            return {
+                obstacles: currentObstacles
+            }
+        }),
     resetState: () => set(_ => ({
-        ...createInitialState()
+        ...createInitialGameState()
     })),
     setPlayerStartingPosition: (startPosX: number, startPosY: number) => set(state => ({
         player: {
@@ -90,16 +102,35 @@ export const useGameStateStore = create<GameState & GameStateStoreAction>((set) 
     }))
 }));
 
+export function createInitialGameState(): GameState {
+    const sizeScale = useGameSettingsStore.getState().sizeScale;
+    const appWidth = useGameSettingsStore.getState().appWidth;
+    const appHeight = useGameSettingsStore.getState().appHeight;
+    const groundHeight = useGameSettingsStore.getState().groundHeight;
+    const playerHeight = 23 * sizeScale;
+    const playerWidth = 20 * sizeScale;
+    const playerStartPosX = appWidth * 0.1;
+    const playerStartPosY = appHeight - groundHeight - playerHeight;
+    const playerJumpHeight = 70 * sizeScale;
+    const playerJumpStrength = 5.4;
+    const playerFallStrength = 5.55;
 
-type GameStateStoreAction = {
-    startGame: () => void
-    endGame: () => void
-    restartGame: () => void
-    decreasePlayerYPos: (playerJumpStrength: number, deltaTime: number) => void
-    increasePlayerYPos: (playerFallStrength: number, playerOriginalYPos: number, deltaTime: number) => void
-    playerJump: (animationSpeed: number) => void
-    increaseScore: () => void
-    moveObstacles: (appHeight: number, groundHeight: number, obstacleSpeed: number, deltaTime: number) => void
-    resetState: (playerOriginalYPos: number) => void
-    setPlayerStartingPosition: (startPosX: number, startPosY: number) => void
+    return {
+        status: GameStatus.Initial,
+        score: 0,
+        player: {
+            x: playerStartPosX,
+            y: playerStartPosY,
+            isJumping: false,
+            animationSpeed: 0.1,
+            textures: playerTextures,
+            width: playerWidth,
+            height: playerHeight,
+            startPosY: playerStartPosY,
+            jumpHeight: playerJumpHeight,
+            jumpStrength: playerJumpStrength,
+            fallStrength: playerFallStrength
+        },
+        obstacles: createObstacles(),
+    };
 }

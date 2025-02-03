@@ -2,12 +2,15 @@ import { Stage, withPixiApp } from '@pixi/react';
 
 import './App.css';
 import Game from './features/game/components/Game';
-import { APP_HEIGHT, APP_WIDTH } from './features/game/constants';
+import { useGameSettingsStore } from './features/game/stores';
 
 function App() {
   const Comp = withPixiApp(Game);
+  const appWidth = useGameSettingsStore(state => state.appWidth);
+  const appHeight = useGameSettingsStore(state => state.appHeight);
+
   return (
-    <Stage width={APP_WIDTH} height={APP_HEIGHT} options={{ background: 0x1099bb }}>
+    <Stage width={appWidth} height={appHeight} options={{ background: 0x1099bb }}>
       <Comp />
     </Stage>
   );
