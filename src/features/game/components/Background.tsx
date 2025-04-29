@@ -1,11 +1,7 @@
-import { extend, useTick } from "@pixi/react";
+import { useExtend, useTick } from "@pixi/react";
 import { useEffect, useState } from "react";
 
 import { Assets, Texture, TilingSprite } from "pixi.js";
-
-extend({
-	TilingSprite,
-});
 
 interface Props {
 	isGamePlaying: boolean;
@@ -20,6 +16,7 @@ function Background({
 	backgroundSpeed,
 	isGamePlaying,
 }: Props) {
+	useExtend({ TilingSprite })
 	const [xPos, setXPos] = useState(0);
 	const [texture, setTexture] = useState(Texture.EMPTY);
 

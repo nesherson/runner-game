@@ -23,6 +23,7 @@ interface AnimatedSpriteWrapper {
 
 function Obstacles({ obstacles, isGamePlaying }: ObstaclesProps) {
 	useExtend({ Container, AnimatedSpriteType });
+	
 	return obstacles.map((o) => (
 		<AnimatedSpriteWrapper
 			key={o.id}

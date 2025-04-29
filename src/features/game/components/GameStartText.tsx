@@ -1,9 +1,5 @@
-import { extend } from "@pixi/react";
+import { extend, useExtend } from "@pixi/react";
 import { Text, TextStyle } from "pixi.js";
-
-extend({
-    Text
-})
 
 interface Props {
     appWidth: number,
@@ -12,6 +8,8 @@ interface Props {
 }
 
 function GameStartText({ appWidth, appHeight, sizeScale }: Props) {
+    useExtend({ Text });
+    
     const xPos = appWidth / 2;
     const yPos = appHeight / 2;
 

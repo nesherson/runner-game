@@ -8,13 +8,8 @@ import {
 } from "pixi.js";
 
 import type { Player as PlayerType } from "../types/types";
-import { extend } from "@pixi/react";
+import { useExtend } from "@pixi/react";
 import { useState, useEffect, useRef } from "react";
-
-extend({
-	AnimatedSprite,
-	Text,
-});
 
 interface Props {
 	player: PlayerType;
@@ -22,8 +17,11 @@ interface Props {
 }
 
 function Player({ player, isGamePlaying }: Props) {
+	useExtend({ AnimatedSprite, Text });
 	const playerRef = useRef<AnimatedSprite>(null);
-	const [textures, setTextures] = useState<Texture<TextureSource<ImageSource>>[]>([]);
+	const [textures, setTextures] = useState<
+		Texture<TextureSource<ImageSource>>[]
+	>([]);
 
 	useEffect(() => {
 		if (textures.length === 0) {

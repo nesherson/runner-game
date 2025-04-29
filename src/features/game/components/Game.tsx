@@ -1,7 +1,7 @@
-import { extend, useApplication, useTick } from "@pixi/react";
+import { useApplication, useExtend, useTick } from "@pixi/react";
 import { useEventListener, useWindowSize } from "@react-hookz/web";
 import { useEffect } from "react";
-import { type Application, Container, Text, TextStyle } from "pixi.js";
+import { Container, Text, TextStyle } from "pixi.js";
 
 import { useGameSettingsStore, useGameStateStore } from "../stores";
 import { SizeScalingOption } from "../types/types";
@@ -21,12 +21,8 @@ import GameOverText from "./GameOverText";
 import GameStartText from "./GameStartText";
 import Obstacles from "./Obstacles";
 
-extend({
-	Container,
-	Text,
-});
-
 function Game() {
+	useExtend({ Container, Text });
 	const { app } = useApplication();
 	const { width: windowWidth, height: windowHeight } = useWindowSize();
 
@@ -153,7 +149,7 @@ function Game() {
 				backgroundSpeed={backgroundSpeed}
 				isGamePlaying={gameStatus === GameStatus.Playing}
 			/>
-			{process.env.NODE_ENV === "development" && (
+			{app.ticker && process.env.NODE_ENV === "development" && (
 				<pixiText
 					text={Math.trunc(app.ticker.FPS).toString()}
 					anchor={0.5}
