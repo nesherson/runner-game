@@ -1,5 +1,3 @@
-import type { Texture } from "pixi.js";
-
 export type GameState = {
 	status: GameStatus;
 	player: Player;

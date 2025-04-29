@@ -1,4 +1,4 @@
-import { extend, useExtend } from "@pixi/react";
+import { useExtend } from "@pixi/react";
 import { Text, TextStyle } from "pixi.js";
 
 interface Props {
