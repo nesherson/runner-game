@@ -1,50 +1,85 @@
-import { AnimatedSprite, Container } from "@pixi/react";
-
-import { type AnimatedSprite as AnimatedSpriteType, ColorMatrixFilter } from "pixi.js";
-import { useEffect, useRef } from "react";
+import {
+	AnimatedSprite as AnimatedSpriteType,
+	Assets,
+	ColorMatrixFilter,
+	Container,
+	type ImageSource,
+	type Texture,
+	type TextureSource,
+} from "pixi.js";
+import { useEffect, useRef, useState } from "react";
 import type { Obstacle } from "../types/types";
+import { useExtend } from "@pixi/react";
 
 interface ObstaclesProps {
-    obstacles: Obstacle[]
-    isGamePlaying: boolean,
+	obstacles: Obstacle[];
+	isGamePlaying: boolean;
 }
 
 interface AnimatedSpriteWrapper {
-    obstacle: Obstacle
-    isGamePlaying: boolean
+	obstacle: Obstacle;
+	isGamePlaying: boolean;
 }
 
 function Obstacles({ obstacles, isGamePlaying }: ObstaclesProps) {
-    return obstacles.map((o, i) => (
-        <AnimatedSpriteWrapper key={i} obstacle={o} isGamePlaying={isGamePlaying}
-        />
-    ))
+	useExtend({ Container, AnimatedSpriteType });
+	return obstacles.map((o) => (
+		<AnimatedSpriteWrapper
+			key={o.id}
+			obstacle={o}
+			isGamePlaying={isGamePlaying}
+		/>
+	));
 }
 
-function AnimatedSpriteWrapper({ obstacle, isGamePlaying }: { obstacle: Obstacle, isGamePlaying: boolean }) {
-    const spriteRef = useRef<null | AnimatedSpriteType>(null);
+function AnimatedSpriteWrapper({
+	obstacle,
+	isGamePlaying,
+}: { obstacle: Obstacle; isGamePlaying: boolean }) {
+	const spriteRef = useRef<null | AnimatedSpriteType>(null);
+	const [textures, setTextures] = useState<
+		Texture<TextureSource<ImageSource>>[]
+	>([]);
 
-    useEffect(() => {
-        if (spriteRef.current) {
-            spriteRef.current.gotoAndPlay(0);
-        }
-    }, [obstacle.textures]);
+	useEffect(() => {
+		if (textures.length === 0) {
+			Assets.load(obstacle.textures).then((result) => {
+				const tempTextures = [];
 
-    return (
-        <Container filters={[new ColorMatrixFilter()]}>
-            <AnimatedSprite
-                ref={spriteRef}
-                textures={obstacle.textures}
-                height={obstacle.height}
-                width={obstacle.width}
-                x={obstacle.x}
-                y={obstacle.y}
-                animationSpeed={obstacle.animationSpeed}
-                isPlaying={isGamePlaying}
-                initialFrame={0}
-            />
-        </Container>
-    );
+				for (const [_, value] of Object.entries(result)) {
+					tempTextures.push(value);
+				}
+
+				setTextures(tempTextures);
+			});
+		}
+	}, [obstacle.textures, textures]);
+
+	useEffect(() => {
+		if (!spriteRef.current) return;
+
+		if (isGamePlaying) {
+			spriteRef.current.play();
+		} else {
+			spriteRef.current.stop();
+		}
+	}, [isGamePlaying]);
+
+	return (
+		<pixiContainer filters={[new ColorMatrixFilter()]}>
+			{textures.length > 0 && (
+				<pixiAnimatedSprite
+					ref={spriteRef}
+					textures={textures}
+					height={obstacle.height}
+					width={obstacle.width}
+					x={obstacle.x}
+					y={obstacle.y}
+					animationSpeed={obstacle.animationSpeed}
+				/>
+			)}
+		</pixiContainer>
+	);
 }
 
 export default Obstacles;
