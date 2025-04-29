@@ -1,10 +1,7 @@
-import { Container, Text, useTick } from "@pixi/react";
+import { useApplication, useExtend, useTick } from "@pixi/react";
 import { useEventListener, useWindowSize } from "@react-hookz/web";
 import { useEffect } from "react";
-import { type Application, TextStyle } from "pixi.js";
-
-import Background from "./Background";
-import Ground from "./Ground";
+import { Container, Text, TextStyle } from "pixi.js";
 
 import { useGameSettingsStore, useGameStateStore } from "../stores";
 import { SizeScalingOption } from "../types/types";
@@ -15,13 +12,18 @@ import {
 	playJumpSound,
 	playScoreMilestone,
 } from "../utils/soundHelpers";
+
+import Background from "./Background";
+import Ground from "./Ground";
 import Player from "./Player";
 import Score from "./Score";
 import GameOverText from "./GameOverText";
 import GameStartText from "./GameStartText";
 import Obstacles from "./Obstacles";
 
-function Game({ app }: { app: Application }) {
+function Game() {
+	useExtend({ Container, Text });
+	const { app } = useApplication();
 	const { width: windowWidth, height: windowHeight } = useWindowSize();
 
 	const appHeight = useGameSettingsStore((state) => state.appHeight);
@@ -57,6 +59,8 @@ function Game({ app }: { app: Application }) {
 			updateScaling(SizeScalingOption.WidthDividedByHeight);
 		}
 
+		if (!app.renderer) return;
+
 		if (windowWidth >= 400 && windowWidth <= 800) {
 			app.renderer.resize(windowWidth, appHeight);
 			resetSettings(windowWidth, appHeight);
@@ -66,9 +70,17 @@ function Game({ app }: { app: Application }) {
 			resetSettings();
 			resetGameState();
 		}
-	}, [windowWidth]);
+	}, [
+		app.renderer,
+		appHeight,
+		windowWidth,
+		windowHeight,
+		updateScaling,
+		resetSettings,
+		resetGameState,
+	]);
 
-	useTick((deltaTime) => {
+	useTick((t) => {
 		if (gameStatus !== GameStatus.Playing) return;
 
 		if (isScoreMilestone(score)) {
@@ -81,9 +93,9 @@ function Game({ app }: { app: Application }) {
 			return;
 		}
 
-		decreasePlayerYPos(deltaTime);
+		decreasePlayerYPos(t.deltaTime);
 		increaseScore();
-		moveObstacles(deltaTime);
+		moveObstacles(t.deltaTime);
 	});
 
 	const playGame = () => {
@@ -130,15 +142,15 @@ function Game({ app }: { app: Application }) {
 	});
 
 	return (
-		<Container>
+		<pixiContainer>
 			<Background
 				appWidth={appWidth}
 				appHeight={appHeight}
 				backgroundSpeed={backgroundSpeed}
 				isGamePlaying={gameStatus === GameStatus.Playing}
 			/>
-			{process.env.NODE_ENV === "development" && (
-				<Text
+			{app.ticker && process.env.NODE_ENV === "development" && (
+				<pixiText
 					text={Math.trunc(app.ticker.FPS).toString()}
 					anchor={0.5}
 					x={15}
@@ -188,7 +200,7 @@ function Game({ app }: { app: Application }) {
 				sizeScale={sizeScale}
 				isGamePlaying={gameStatus === GameStatus.Playing}
 			/>
-		</Container>
+		</pixiContainer>
 	);
 }
 

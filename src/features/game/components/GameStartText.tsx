@@ -1,5 +1,5 @@
-import { Text } from "@pixi/react";
-import { TextStyle } from "pixi.js";
+import { useExtend } from "@pixi/react";
+import { Text, TextStyle } from "pixi.js";
 
 interface Props {
     appWidth: number,
@@ -8,12 +8,14 @@ interface Props {
 }
 
 function GameStartText({ appWidth, appHeight, sizeScale }: Props) {
+    useExtend({ Text });
+    
     const xPos = appWidth / 2;
     const yPos = appHeight / 2;
 
     return (
         <>
-            <Text
+            <pixiText
                 text="Start game"
                 anchor={0.5}
                 x={xPos}
@@ -22,7 +24,7 @@ function GameStartText({ appWidth, appHeight, sizeScale }: Props) {
                     fontSize: 50 * sizeScale
                 })}
             />
-            <Text
+            <pixiText
                 text="Click or press spacebar to start"
                 anchor={0.5}
                 x={xPos}
