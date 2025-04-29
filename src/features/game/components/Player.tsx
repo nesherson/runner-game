@@ -4,6 +4,7 @@ import {
 	type Texture,
 	Text,
 	type TextureSource,
+	type ImageSource,
 } from "pixi.js";
 
 import type { Player as PlayerType } from "../types/types";
@@ -22,7 +23,7 @@ interface Props {
 
 function Player({ player, isGamePlaying }: Props) {
 	const playerRef = useRef<AnimatedSprite>(null);
-	const [textures, setTextures] = useState<Texture<TextureSource<any>>[]>([]);
+	const [textures, setTextures] = useState<Texture<TextureSource<ImageSource>>[]>([]);
 
 	useEffect(() => {
 		if (textures.length === 0) {
@@ -54,7 +55,7 @@ function Player({ player, isGamePlaying }: Props) {
 					width={player.width}
 					x={player.x}
 					y={player.y}
-          animationSpeed={player.animationSpeed}
+					animationSpeed={player.animationSpeed}
 				/>
 			)}
 		</>

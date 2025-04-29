@@ -43,6 +43,7 @@ export function createObstacles() {
 		const obstacleHeight = temp.height * sizeScale;
 
 		const obstacle: Obstacle = {
+			id: i,
 			y: appHeight - groundHeight - obstacleHeight,
 			x:
 				prevPosX +
