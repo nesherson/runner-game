@@ -2,8 +2,8 @@ import { Application } from '@pixi/react';
 
 import './App.css';
 
-import Game from './features/game/components/Game';
-import { useGameSettingsStore } from './features/game/stores';
+import Game from './components/Game';
+import { useGameSettingsStore } from './stores';
 
 function App() {
   const appWidth = useGameSettingsStore(state => state.appWidth);
