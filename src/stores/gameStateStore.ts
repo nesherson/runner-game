@@ -123,8 +123,8 @@ export function createInitialGameState(): GameState {
 	const appWidth = useGameSettingsStore.getState().appWidth;
 	const appHeight = useGameSettingsStore.getState().appHeight;
 	const groundHeight = useGameSettingsStore.getState().groundHeight;
-	const playerHeight = 23 * sizeScale;
-	const playerWidth = 20 * sizeScale;
+	const playerHeight = 24 * sizeScale;
+	const playerWidth = 24 * sizeScale;
 	const playerStartPosX = appWidth * 0.1;
 	const playerStartPosY = appHeight - groundHeight - playerHeight;
 	const playerJumpHeight = 70 * sizeScale;

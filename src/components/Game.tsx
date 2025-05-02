@@ -15,7 +15,7 @@ import {
 
 import Background from "./Background";
 import Ground from "./Ground";
-import Player from "./Player";
+import Player from "./player/Player";
 import Score from "./Score";
 import GameOverText from "./GameOverText";
 import GameStartText from "./GameStartText";
